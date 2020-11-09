@@ -1,0 +1,48 @@
+version: '3'
+services:
+ webserver:
+  image: nginx:latest
+  ports:
+    - 8085:80
+  volumes:
+    - ./apps:/apps
+    - ./site-dev.conf:/etc/nginx/conf.d/site.conf
+  links:
+    - php-fpm
+  networks:
+    trm_laravel:
+
+ php-fpm:
+  image: gaankdoank/apps_php-fpm7:trm
+  #build: .
+  volumes:  
+    - ./apps:/apps
+    - ./php-dev.ini:/usr/local/etc/php/php.ini
+  ports:
+    - 9103:9103
+  networks:
+    trm_laravel:
+  
+ mariadb:
+  image: mariadb:latest
+  container_name: dbhost
+  environment:
+   MYSQL_ROOT_PASSWORD: Alhamdulillah@)!(
+   MYSQL_DATABASE: trm_db
+   MYSQL_USER: trm
+   MYSQL_PASSWORD: Alhamdulillah@)!(
+  logging:
+   driver: syslog
+   options:
+    tag: "{{.DaemonName}}(image={{.ImageName}};name={{.Name}};id={{.ID}})"
+  volumes:
+   #- ${PWD}/mariadb:/var/lib/mysql
+   - ./mariadb:/var/lib/mysql
+  networks:
+   trm_laravel:
+  ports:
+    - 3306:3306
+
+networks:
+ trm_laravel:
+  external: true
